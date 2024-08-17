@@ -1,9 +1,14 @@
-import React from 'react'
+import React, { useState } from 'react'
 
-const Header = () => {
+interface IHeaderProps {
+    willbeWatchNumber: number,
+    watchedNumber: number,
+}
+
+const Header: React.FC<IHeaderProps> = () => {
+
     return (
         <div>
-
         </div>
     )
 }

@@ -1,10 +1,15 @@
+import { Provider } from 'react-redux'
 import styles from './app.module.css'
+import Header from './components/Header/Header'
 
 function App() {
 
   return (
-    <div className={styles.main}>Hello New Project!
-    </div>
+    <Provider store={store}>
+      <div className={styles.main}>
+        <Header />
+      </div>
+    </Provider>
   )
 }
 
