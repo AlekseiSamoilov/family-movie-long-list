@@ -12,7 +12,7 @@ export class User extends Document {
     @Prop({ require: true })
     password: string;
 
-    @Prop({ type: [{ type: Types.ObjectId, ref: 'Group ' }] })
+    @Prop({ type: [{ type: Types.ObjectId, ref: 'Group' }] })
     groups: Types.ObjectId[];
 
     @Prop({ default: 0 })
