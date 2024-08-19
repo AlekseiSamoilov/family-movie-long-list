@@ -3,12 +3,13 @@ import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { User } from "./user.schema";
 import { UpdateUserDto } from "./dto/update-user.dto";
+import { CreateUserDto } from "./dto/create-user.dto";
 
 @Injectable()
 export class UsersService {
     constructor(@InjectModel(User.name) private userModel: Model<User>) { }
 
-    async create(createUserDto: any): Promise<User> {
+    async create(createUserDto: CreateUserDto): Promise<User> {
         const createdUser = new this.userModel((createUserDto));
         return createdUser.save();
     }
@@ -27,6 +28,17 @@ export class UsersService {
 
     async updateUser(id: string, updateUserDto: UpdateUserDto): Promise<User> {
         const existingUser = await this.userModel.findByIdAndUpdate(id, updateUserDto, { new: true }).exec();
+        if (!existingUser) {
+            throw new NotFoundException(`User with ID: ${id} not found!`);
+        }
         return existingUser;
+    }
+
+    async delete(id: string): Promise<User> {
+        const deletedUser = await this.userModel.findByIdAndDelete(id).exec();
+        if (!deletedUser) {
+            throw new NotFoundException(`User with ID: ${id} not found`);
+        }
+        return deletedUser;
     }
 }
