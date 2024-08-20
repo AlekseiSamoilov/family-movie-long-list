@@ -26,6 +26,10 @@ export class MoviesService {
         return movie;
     }
 
+    async findByMovieName(movieName: string): Promise<Movie> {
+        return this.movieModel.findOne({ movieName })
+    }
+
     async updateMovie(id: string): Promise<Movie> {
         const existingMovie = await this.movieModel.findByIdAndUpdate(id).exec();
         if (!existingMovie) {
