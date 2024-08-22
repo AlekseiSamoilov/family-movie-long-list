@@ -3,13 +3,13 @@ import { Types } from 'mongoose';
 
 @Schema()
 export class User extends Document {
-    @Prop({ require: true })
+    @Prop({ required: true })
     name: string;
 
-    @Prop({ require: true, unique: true })
+    @Prop({ required: true, unique: true })
     login: string;
 
-    @Prop({ require: true })
+    @Prop({ required: true })
     password: string;
 
     @Prop({ type: [{ type: Types.ObjectId, ref: 'Group' }] })

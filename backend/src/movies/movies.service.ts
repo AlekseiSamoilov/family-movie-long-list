@@ -3,6 +3,7 @@ import { InjectModel } from "@nestjs/mongoose";
 import { Movie } from "./movie.schema";
 import { Model } from "mongoose";
 import { CreateMovieDto } from "./dto/create-movie.dto";
+import { UpdateMovieDto } from "./dto/update-movie.dto";
 
 
 @Injectable()
@@ -30,8 +31,8 @@ export class MoviesService {
         return this.movieModel.findOne({ movieName })
     }
 
-    async updateMovie(id: string): Promise<Movie> {
-        const existingMovie = await this.movieModel.findByIdAndUpdate(id).exec();
+    async updateMovie(id: string, updateMovieDto: UpdateMovieDto): Promise<Movie> {
+        const existingMovie = await this.movieModel.findByIdAndUpdate(id, updateMovieDto, { new: true }).exec();
         if (!existingMovie) {
             throw new NotFoundException(`Movie whith ID: ${id} not found`);
         }

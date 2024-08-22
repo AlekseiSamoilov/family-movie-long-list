@@ -26,11 +26,6 @@ export class UsersService {
         return user;
     }
 
-    async findByUserName(username: string): Promise<User | null> {
-        // const findedingUser = 
-        return this.userModel.findOne({ name: username }).exec();
-    }
-
     async updateUser(id: string, updateUserDto: UpdateUserDto): Promise<User> {
         const existingUser = await this.userModel.findByIdAndUpdate(id, updateUserDto, { new: true }).exec();
         if (!existingUser) {

@@ -3,19 +3,19 @@ import { Types } from "mongoose";
 
 @Schema()
 export class Movie extends Document {
-    @Prop({ require: true })
+    @Prop({ required: true })
     name: string;
 
-    @Prop({ require: true })
+    @Prop({ required: true })
     genre: string;
 
-    @Prop({ require: true })
+    @Prop({ required: true })
     year: number;
 
     @Prop()
     director: string;
 
-    @Prop({ require: true })
+    @Prop({ required: true })
     addedAt: Date;
 
     @Prop({ type: [{ type: Types.ObjectId, ref: 'User' }] })
