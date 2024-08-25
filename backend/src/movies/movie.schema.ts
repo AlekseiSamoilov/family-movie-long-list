@@ -21,6 +21,9 @@ export class Movie extends Document {
     @Prop({ type: [{ type: Types.ObjectId, ref: 'User' }] })
     addedBy: Types.ObjectId[];
 
+    @Prop({ type: [{ type: Types.ObjectId, ref: 'Group' }] })
+    group: Types.ObjectId[];
+
     @Prop()
     stars: number;
 }

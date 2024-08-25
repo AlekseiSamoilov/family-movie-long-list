@@ -15,6 +15,9 @@ export class User extends Document {
     @Prop({ type: [{ type: Types.ObjectId, ref: 'Group' }] })
     groups: Types.ObjectId[];
 
+    @Prop({ type: [{ type: Types.ObjectId, ref: 'Movie' }] })
+    watchedMovies: Types.ObjectId[];
+
     @Prop({ default: 0 })
     moviesWatched: number;
 

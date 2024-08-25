@@ -4,10 +4,14 @@ import { Model } from "mongoose";
 import { User } from "./user.schema";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { CreateUserDto } from "./dto/create-user.dto";
+import { GroupService } from "src/groups/group.service";
 
 @Injectable()
 export class UsersService {
-    constructor(@InjectModel(User.name) private userModel: Model<User>) { }
+    constructor(
+        @InjectModel(User.name) private userModel: Model<User>,
+        private groupService: GroupService
+    ) { }
 
     async create(createUserDto: CreateUserDto): Promise<User> {
         const createdUser = new this.userModel((createUserDto));
@@ -40,5 +44,32 @@ export class UsersService {
             throw new NotFoundException(`User with ID: ${id} not found`);
         }
         return deletedUser;
+    }
+
+    async addMovieToWatched(userId: string, movieId: string): Promise<User> {
+        const user = await this.userModel.findByIdAndUpdate(
+            userId,
+            {
+                $addToSet: { watchedMovies: movieId },
+                $inc: { moviesWatched: 1 }
+            },
+            { new: true }
+        ).exec();
+        if (!user) {
+            throw new NotFoundException(`User with ID: ${userId} not found`);
+        }
+        return user;
+    }
+
+    async getMoviesForUserInGroup(userId: string, groupId: string): Promise<any> {
+        const user = await this.userModel.findById(userId).exec();
+        if (!user) {
+            throw new NotFoundException(`User with ID: ${userId} not found`);
+        }
+        const group = await this.groupService.findOne(groupId);
+        if (!group) {
+            throw new NotFoundException(`Group with ID: ${groupId} not found`);
+        }
+        return group.movies;
     }
 }

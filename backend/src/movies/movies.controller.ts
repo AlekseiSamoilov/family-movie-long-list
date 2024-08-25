@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Patch, Post, Req } from "@nestjs/common";
 import { MoviesService } from "./movies.service";
 import { CreateMovieDto } from "./dto/create-movie.dto";
 import { Movie } from "./movie.schema";
@@ -9,8 +9,10 @@ export class MovieController {
     constructor(private readonly movieService: MoviesService) { }
 
     @Post()
-    async create(@Body() createMovieDto: CreateMovieDto): Promise<Movie> {
-        return this.movieService.create(createMovieDto);
+    async create(@Body() createMovieDto: CreateMovieDto, @Req() req: any): Promise<Movie> {
+        const userId = req.user.id;
+        const groupId = req.body.groupId;
+        return this.movieService.create(createMovieDto, userId, groupId)
     }
 
     @Get()
@@ -32,5 +34,10 @@ export class MovieController {
     @Delete(':id')
     async delete(@Param('id') id: string) {
         return this.movieService.delete(id);
+    }
+
+    @Get('group/:groupId')
+    async findMoviesByGroup(@Param('groupId') groupId: string) {
+        return this.movieService.findMovieByGroup(groupId)
     }
 }

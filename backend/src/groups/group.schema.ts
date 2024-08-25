@@ -1,4 +1,4 @@
-import { Prop, Schema } from "@nestjs/mongoose";
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Types } from "mongoose";
 
 @Schema()
@@ -8,4 +8,9 @@ export class Group extends Document {
 
     @Prop({ type: [{ type: Types.ObjectId, ref: 'User' }] })
     users: Types.ObjectId[];
-}  
+
+    @Prop({ type: [{ type: Types.ObjectId, ref: 'Movie' }] })
+    movies: Types.ObjectId[];
+}
+
+export const GroupSchema = SchemaFactory.createForClass(Group);
