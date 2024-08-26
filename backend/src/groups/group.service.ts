@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Group } from "./group.schema";
 import { CreateGroupDto } from "./dto/create-group.dto";
-import { Model } from "mongoose";
+import { Model, Types } from "mongoose";
 import { UpdateGroupDto } from "./dto/update-group.dto";
 
 @Injectable()
@@ -45,7 +45,7 @@ export class GroupService {
     async AddUserToGroup(groupId: string, userId: string): Promise<Group> {
         const group = await this.groupModel.findByIdAndUpdate(
             groupId,
-            { $addToSet: { users: userId } },
+            { $addToSet: { users: new Types.ObjectId(userId) } },
             { new: true }
         ).exec();
         if (!group) {
@@ -57,7 +57,7 @@ export class GroupService {
     async addMovieToGroup(groupId: string, movieId: string): Promise<Group> {
         const group = await this.groupModel.findByIdAndUpdate(
             groupId,
-            { $addToSet: { movies: movieId } },
+            { $addToSet: { movies: new Types.ObjectId(movieId) } },
             { new: true }
         ).exec();
         if (!group) {

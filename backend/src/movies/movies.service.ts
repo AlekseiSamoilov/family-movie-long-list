@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Movie } from "./movie.schema";
-import { Model } from "mongoose";
+import { Model, Types } from "mongoose";
 import { CreateMovieDto } from "./dto/create-movie.dto";
 import { UpdateMovieDto } from "./dto/update-movie.dto";
 import { GroupService } from "src/groups/group.service";
@@ -17,8 +17,8 @@ export class MoviesService {
     async create(createMovieDto: CreateMovieDto, userId: string, groupId: string): Promise<Movie> {
         const newMovie = new this.movieModel({
             ...createMovieDto,
-            addedBy: userId,
-            group: groupId
+            addedBy: new Types.ObjectId(userId),
+            group: new Types.ObjectId(groupId)
         });
 
         const savedMovie = await newMovie.save();
