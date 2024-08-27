@@ -125,4 +125,24 @@ describe('GroupService', () => {
         });
     });
 
+    describe('addUserToGroup', () => {
+        it('should_add_a_user_to_a_group', async () => {
+            const updatedGroup = { ...mockGroup, users: ['userId'] };
+            mockGroupModel.findByIdAndUpdate.mockResolvedValue(updatedGroup);
+
+            const result = await service.AddUserToGroup('groupId', 'userId');
+            expect(result).toStrictEqual(updatedGroup);
+            expect(mockGroupModel.findByIdAndUpdate).toHaveBeenCalledWith(
+                'groupId',
+                { $addToSet: { users: 'userId' } },
+                { new: true }
+            );
+        });
+
+        it('should_throw_NotFoundException_if_group_is_not_found_when_adding_user', async () => {
+            mockGroupModel.findByIdAndUpdate.mockResolvedValue(null);
+
+            await expect(service.AddUserToGroup('non_existent_id', 'userId')).rejects.toThrow(NotFoundException);
+        });
+    });
 })
