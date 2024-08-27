@@ -4,7 +4,7 @@ import { CreateMovieDto } from "./dto/create-movie.dto";
 import { Movie } from "./movie.schema";
 import { UpdateMovieDto } from "./dto/update-movie.dto";
 
-@Controller('movie')
+@Controller('movies')
 export class MovieController {
     constructor(private readonly movieService: MoviesService) { }
 
