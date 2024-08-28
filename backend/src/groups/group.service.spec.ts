@@ -145,4 +145,25 @@ describe('GroupService', () => {
             await expect(service.AddUserToGroup('non_existent_id', 'userId')).rejects.toThrow(NotFoundException);
         });
     });
-})
+
+    describe('addMovieToGroup', () => {
+        it('should_add_a_movie_to_a_group', async () => {
+            const updatedGroup = { ...mockGroup, movies: ['movieId'] };
+            mockGroupModel.findByIdAndUpdate.mockResolvedValue(updatedGroup);
+
+            const result = await service.addMovieToGroup('groupId', 'movieId');
+            expect(result).toEqual(updatedGroup);
+            expect(mockGroupModel.findByIdAndUpdate).toHaveBeenCalledWith(
+                'groupId',
+                { $addToSet: { movies: 'movieId' } },
+                { new: true }
+            );
+        });
+
+        it('should_throw_NotFoundException_if_group_is_not_found_when_adding_movie', async () => {
+            mockGroupModel.findByIdAndUpdate.mockResolvedValue(null);
+
+            await expect(service.addMovieToGroup('nonexistentId', 'movieId')).rejects.toThrow(NotFoundException);
+        });
+    });
+});
