@@ -6,6 +6,7 @@ import { getModelToken } from "@nestjs/mongoose";
 import { CreateGroupDto } from "./dto/create-group.dto";
 import { mock } from "node:test";
 import { NotFoundException } from "@nestjs/common";
+import { exec } from "node:child_process";
 
 describe('GroupService', () => {
     let service: GroupService;
@@ -72,24 +73,34 @@ describe('GroupService', () => {
 
     describe('findOne', () => {
         it('should_return_a_single_group', async () => {
+            const execMock = jest.fn().mockResolvedValue(mockGroup);
+            const populateMock = jest.fn().mockReturnThis();
             mockGroupModel.findById.mockReturnValue({
-                populate: jest.fn().mockReturnValue({
-                    populate: jest.fn().mockResolvedValue(mockGroup)
-                }),
+                populate: populateMock,
+                exec: execMock,
             });
 
-            const result = await service.findOne('test_id');
+            const result = await service.findOne('someId');
             expect(result).toEqual(mockGroup);
-            expect(mockGroupModel.findById).toHaveBeenCalledWith('test_id');
+            expect(mockGroupModel.findById).toHaveBeenCalledWith('someId');
+            expect(populateMock).toHaveBeenCalledWith('users');
+            expect(populateMock).toHaveBeenCalledWith('movies');
+            expect(execMock).toHaveBeenCalled();
         });
 
         it('should_throw_NotFoundException_if_group_is_nit_found', async () => {
+            const execMock = jest.fn().mockResolvedValue(null);
+            const populateMock = jest.fn().mockReturnThis();
             mockGroupModel.findById.mockReturnValue({
-                populate: jest.fn().mockReturnValue({
-                    populate: jest.fn().mockResolvedValue(null),
-                }),
+                populate: populateMock,
+                exec: execMock,
             });
-            await expect(service.findOne('non_existend_Id')).rejects.toThrow(NotFoundException);
+
+            await expect(service.findOne('nonexistentId')).rejects.toThrow(NotFoundException);
+            expect(mockGroupModel.findById).toHaveBeenCalledWith('nonexistentId');
+            expect(populateMock).toHaveBeenCalledWith('users');
+            expect(populateMock).toHaveBeenCalledWith('movies');
+            expect(execMock).toHaveBeenCalled();
         });
     });
     describe('update', () => {

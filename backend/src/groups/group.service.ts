@@ -10,8 +10,7 @@ export class GroupService {
     constructor(@InjectModel(Group.name) private groupModel: Model<Group>) { }
 
     async create(createGroupDto: CreateGroupDto): Promise<Group> {
-        const createdGroup = new this.groupModel(createGroupDto);
-        return createdGroup.save();
+        return this.groupModel.create(createGroupDto)
     }
 
     async findAll(): Promise<Group[]> {
@@ -19,7 +18,10 @@ export class GroupService {
     }
 
     async findOne(id: string): Promise<Group> {
-        const group = await this.groupModel.findById(id).populate('users').populate('movies').exec();
+        const group = await this.groupModel.findById(id)
+            .populate('users')
+            .populate('movies')
+            .exec();
         if (!group) {
             throw new NotFoundException(`Group with ID ${id} not found`);
         }
