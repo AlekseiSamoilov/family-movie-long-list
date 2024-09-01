@@ -44,12 +44,13 @@ export class GroupService {
         return deletedGroup;
     }
 
-    async AddUserToGroup(groupId: string, userId: string): Promise<Group> {
+    async addUserToGroup(groupId: string, userId: string): Promise<Group> {
         const group = await this.groupModel.findByIdAndUpdate(
             groupId,
-            { $addToSet: { users: new Types.ObjectId(userId) } },
+            { $addToSet: { users: userId } },
             { new: true }
         ).exec();
+
         if (!group) {
             throw new NotFoundException(`Group with ID ${groupId} not found`);
         }
@@ -59,7 +60,7 @@ export class GroupService {
     async addMovieToGroup(groupId: string, movieId: string): Promise<Group> {
         const group = await this.groupModel.findByIdAndUpdate(
             groupId,
-            { $addToSet: { movies: new Types.ObjectId(movieId) } },
+            { $addToSet: { movies: movieId } },
             { new: true }
         ).exec();
         if (!group) {

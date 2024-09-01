@@ -5,6 +5,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { getModelToken } from "@nestjs/mongoose";
 import { CreateGroupDto } from "./dto/create-group.dto";
 import { NotFoundException } from "@nestjs/common";
+import { exec } from "child_process";
 
 describe('GroupService', () => {
     let service: GroupService;
@@ -38,6 +39,7 @@ describe('GroupService', () => {
 
         service = module.get<GroupService>(GroupService);
         model = module.get<Model<Group>>(getModelToken(Group.name));
+        jest.clearAllMocks();
     });
 
     it('should be defined', () => {
@@ -143,38 +145,54 @@ describe('GroupService', () => {
             expect(execMock).toHaveBeenCalled();
         });
 
-        // it('should_throw_NotFoundException_if_group_to_remove_not_found', async () => {
-        //     mockGroupModel.findByIdAndRemove.mockResolvedValue(null);
+        it('should throw NotFoundException if group to remove not found', async () => {
+            const execMock = jest.fn().mockResolvedValue(null);
+            mockGroupModel.findByIdAndDelete.mockReturnValue({
+                exec: execMock,
+            })
 
-        //     await expect(service.remove('non_existent_id')).rejects.toThrow(NotFoundException);
-        // });
+            await expect(service.remove('non_existent_id')).rejects.toThrow(NotFoundException);
+            expect(execMock).toHaveBeenCalled();
+        });
     });
 
     describe('addUserToGroup', () => {
-        it('should_add_a_user_to_a_group', async () => {
+        it('should add a user to group', async () => {
             const updatedGroup = { ...mockGroup, users: ['userId'] };
-            mockGroupModel.findByIdAndUpdate.mockResolvedValue(updatedGroup);
+            const execMock = jest.fn().mockResolvedValue(updatedGroup);
+            mockGroupModel.findByIdAndUpdate.mockReturnValue({ exec: execMock });
 
-            const result = await service.AddUserToGroup('groupId', 'userId');
-            expect(result).toStrictEqual(updatedGroup);
+            const result = await service.addUserToGroup('groupId', 'userId');
+            expect(result).toEqual(updatedGroup);
             expect(mockGroupModel.findByIdAndUpdate).toHaveBeenCalledWith(
                 'groupId',
                 { $addToSet: { users: 'userId' } },
                 { new: true }
             );
+            expect(execMock).toHaveBeenCalled();
         });
 
-        it('should_throw_NotFoundException_if_group_is_not_found_when_adding_user', async () => {
-            mockGroupModel.findByIdAndUpdate.mockResolvedValue(null);
+        it('shoul throw NotFoundException if group is not found', async () => {
+            const execMock = jest.fn().mockResolvedValue(null);
+            mockGroupModel.findByIdAndUpdate.mockReturnValue({ exec: execMock });
 
-            await expect(service.AddUserToGroup('non_existent_id', 'userId')).rejects.toThrow(NotFoundException);
-        });
+            await expect(service.addUserToGroup('nonexistentId', 'userId')).rejects.toThrow(NotFoundException);
+
+            expect(mockGroupModel.findByIdAndUpdate).toHaveBeenCalledWith(
+                'nonexistentId',
+                { $addToSet: { users: 'userId' } },
+                { new: true }
+            )
+
+            expect(execMock).toHaveBeenCalled();
+        })
     });
 
     describe('addMovieToGroup', () => {
-        it('should_add_a_movie_to_a_group', async () => {
+        it('should add a movie to a group', async () => {
             const updatedGroup = { ...mockGroup, movies: ['movieId'] };
-            mockGroupModel.findByIdAndUpdate.mockResolvedValue(updatedGroup);
+            const execMock = jest.fn().mockResolvedValue(updatedGroup);
+            mockGroupModel.findByIdAndUpdate.mockReturnValue({ exec: execMock });
 
             const result = await service.addMovieToGroup('groupId', 'movieId');
             expect(result).toEqual(updatedGroup);
@@ -183,12 +201,22 @@ describe('GroupService', () => {
                 { $addToSet: { movies: 'movieId' } },
                 { new: true }
             );
+            expect(execMock).toHaveBeenCalled();
         });
 
-        it('should_throw_NotFoundException_if_group_is_not_found_when_adding_movie', async () => {
-            mockGroupModel.findByIdAndUpdate.mockResolvedValue(null);
+        it('should throw NotFoundException if group is not found when adding movie', async () => {
+            const execMock = jest.fn().mockResolvedValue(null);
+            mockGroupModel.findByIdAndUpdate.mockReturnValue({ exec: execMock });
 
             await expect(service.addMovieToGroup('nonexistentId', 'movieId')).rejects.toThrow(NotFoundException);
+
+            expect(mockGroupModel.findByIdAndUpdate).toHaveBeenCalledWith(
+                'nonexistentId',
+                { $addToSet: { movies: 'movieId' } },
+                { new: true }
+            )
+
+            expect(execMock).toHaveBeenCalled();
         });
     });
 });
