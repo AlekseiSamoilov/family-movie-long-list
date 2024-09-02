@@ -12,9 +12,9 @@ export class UpdateUserDto {
     @IsString()
     @IsOptional()
     @MinLength(6)
-    readonly password: string;
+    readonly password?: string;
 
     @IsString()
     @IsOptional()
-    readonly passwordHint: string;
+    readonly passwordHint?: string;
 }

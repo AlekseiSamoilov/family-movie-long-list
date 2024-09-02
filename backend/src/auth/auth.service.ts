@@ -2,10 +2,10 @@ import { Injectable, NotFoundException, UnauthorizedException } from "@nestjs/co
 import { JwtService } from "@nestjs/jwt";
 import { UsersService } from "src/users/users.service";
 import * as bcrypt from 'bcrypt';
-import { NotFoundError } from "rxjs";
+import { UpdateUserDto } from "src/users/dto/update-user.dto";
 
 @Injectable()
-export class AuthSerivce {
+export class AuthService {
     constructor(
         private userService: UsersService,
         private jwtService: JwtService
@@ -36,7 +36,8 @@ export class AuthSerivce {
             throw new UnauthorizedException('Incorrect password hint');
         }
         const hashedPassword = await bcrypt.hash(newPassword, 10);
-        await this.userService.updateUser(user._id, { password: hashedPassword });
+        const updateUserDto: UpdateUserDto = { password: hashedPassword }
+        await this.userService.updateUser(user._id.toString(), updateUserDto);
         return { message: 'Password successfully reset ' }
     }
 }

@@ -22,7 +22,7 @@ export class UsersService {
         });
         const savedUser = await createdUser.save();
 
-        await this.groupService.addUserToGroup('defaultGroupId', savedUser._id);
+        await this.groupService.addUserToGroup('defaultGroupId', savedUser._id.toString());
 
         return savedUser;
     }
@@ -37,6 +37,10 @@ export class UsersService {
             throw new NotFoundException(`User with ID: ${id} not found!`);
         }
         return user;
+    }
+
+    async findByLogin(login: string): Promise<User | undefined> {
+        return this.userModel.findOne({ login }).exec();
     }
 
     async updateUser(id: string, updateUserDto: UpdateUserDto): Promise<User> {
