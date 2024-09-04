@@ -4,7 +4,7 @@ import { Movie } from "./movie.schema";
 import { Model, Types } from "mongoose";
 import { CreateMovieDto } from "./dto/create-movie.dto";
 import { UpdateMovieDto } from "./dto/update-movie.dto";
-import { GroupService } from "src/groups/group.service";
+import { GroupService } from "../groups/group.service";
 
 
 @Injectable()
@@ -15,21 +15,19 @@ export class MoviesService {
     ) { }
 
     async create(createMovieDto: CreateMovieDto, userId: string, groupId: string): Promise<Movie> {
-        const newMovie = new this.movieModel({
+        const [newMovie] = await this.movieModel.create([{
             ...createMovieDto,
             addedBy: new Types.ObjectId(userId),
             group: new Types.ObjectId(groupId)
-        });
+        }]);
 
-        const savedMovie = await newMovie.save();
+        await this.groupService.addMovieToGroup(groupId, newMovie._id.toString());
 
-        await this.groupService.addMovieToGroup(groupId, savedMovie._id.toString());
-
-        return savedMovie;
+        return newMovie;
     }
 
     async findAll(): Promise<Movie[]> {
-        return this.movieModel.find().exec();
+        return this.movieModel.find().populate('addedBy').populate('group').exec();
     }
 
     async findOne(id: string): Promise<Movie> {
