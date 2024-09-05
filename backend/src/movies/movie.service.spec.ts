@@ -1,4 +1,4 @@
-import { Model, Types, Document } from "mongoose";
+import { Model, Types } from "mongoose";
 import { Movie } from "./movie.schema";
 import { MoviesService } from "./movies.service";
 import { getModelToken } from "@nestjs/mongoose";
@@ -6,7 +6,6 @@ import { GroupService } from "../groups/group.service";
 import { Test, TestingModule } from "@nestjs/testing";
 import { CreateMovieDto } from "./dto/create-movie.dto";
 import { NotFoundException } from "@nestjs/common";
-import { exec } from "child_process";
 
 const mockMovieModel = () => ({
     create: jest.fn(),

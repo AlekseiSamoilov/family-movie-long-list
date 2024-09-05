@@ -4,7 +4,7 @@ import { Model } from "mongoose";
 import { User } from "./user.schema";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { CreateUserDto } from "./dto/create-user.dto";
-import { GroupService } from "src/groups/group.service";
+import { GroupService } from "../groups/group.service";
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -16,15 +16,14 @@ export class UsersService {
 
     async create(createUserDto: CreateUserDto): Promise<User> {
         const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
-        const createdUser = new this.userModel({
+        const createdUser = await this.userModel.create({
             ...createUserDto,
             password: hashedPassword,
         });
-        const savedUser = await createdUser.save();
 
-        await this.groupService.addUserToGroup('defaultGroupId', savedUser._id.toString());
+        await this.groupService.addUserToGroup('defaultGroupId', createdUser._id.toString());
 
-        return savedUser;
+        return createdUser;
     }
 
     async findAll(): Promise<User[]> {
