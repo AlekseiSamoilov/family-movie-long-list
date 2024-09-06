@@ -106,12 +106,12 @@ describe('UsersService', () => {
         it('should return one user by id', async () => {
             const mockUser = { name: 'testUser', _id: 'testId' };
 
-            jest.spyOn(model, 'findOne').mockReturnValue({
+            jest.spyOn(model, 'findById').mockReturnValue({
                 populate: jest.fn().mockReturnThis(),
                 exec: jest.fn().mockResolvedValue(mockUser),
             } as any);
 
-            const result = await service.findByLogin('testId');
+            const result = await service.findOne('testId');
 
             expect(result).toEqual(mockUser);
             expect(model.findById).toHaveBeenCalledWith('testId')
@@ -139,7 +139,7 @@ describe('UsersService', () => {
             const result = await service.findByLogin(mockUser.login);
 
             expect(result).toEqual(mockUser);
-            expect(model.findOne).toHaveBeenCalledWith(mockUser.login)
+            expect(model.findOne).toHaveBeenCalledWith({ login: mockUser.login })
         })
     })
 
