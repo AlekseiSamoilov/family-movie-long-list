@@ -7,7 +7,6 @@ import { getModelToken } from "@nestjs/mongoose";
 import { GroupService } from "../groups/group.service";
 import { CreateUserDto } from "./dto/create-user.dto";
 import * as bcrypt from 'bcrypt';
-import { NotFoundError } from "rxjs";
 import { NotFoundException } from "@nestjs/common";
 
 const mockUsersModel = {
@@ -17,7 +16,8 @@ const mockUsersModel = {
     findById: jest.fn(),
     findOne: jest.fn(),
     findByIdAndUpdate: jest.fn(),
-    findByIdAndDelete: jest.fn()
+    findByIdAndDelete: jest.fn(),
+    findByLogin: jest.fn(),
 };
 
 const mockGroupService = {
@@ -106,12 +106,12 @@ describe('UsersService', () => {
         it('should return one user by id', async () => {
             const mockUser = { name: 'testUser', _id: 'testId' };
 
-            jest.spyOn(model, 'findById').mockReturnValue({
+            jest.spyOn(model, 'findOne').mockReturnValue({
                 populate: jest.fn().mockReturnThis(),
                 exec: jest.fn().mockResolvedValue(mockUser),
             } as any);
 
-            const result = await service.findOne('testId');
+            const result = await service.findByLogin('testId');
 
             expect(result).toEqual(mockUser);
             expect(model.findById).toHaveBeenCalledWith('testId')
@@ -126,5 +126,22 @@ describe('UsersService', () => {
             await expect(service.findOne('nonexistentid')).rejects.toThrow(NotFoundException);
         });
     });
+
+    describe('findByLogin', () => {
+        it('should find one user by login', async () => {
+            const mockUser = { login: 'testLogin', _id: 'testId' };
+
+            jest.spyOn(model, 'findOne').mockReturnValue({
+                populate: jest.fn().mockReturnThis(),
+                exec: jest.fn().mockReturnValue(mockUser),
+            } as any);
+
+            const result = await service.findByLogin(mockUser.login);
+
+            expect(result).toEqual(mockUser);
+            expect(model.findOne).toHaveBeenCalledWith(mockUser.login)
+        })
+    })
+
 
 })
