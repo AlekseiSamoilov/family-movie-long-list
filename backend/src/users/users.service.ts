@@ -21,7 +21,7 @@ export class UsersService {
             password: hashedPassword,
         });
 
-        await this.groupService.addUserToGroup('defaultGroupId', createdUser._id.toString());
+        await this.groupService.addUserToGroup(`${createUserDto.name} first group`, createdUser._id.toString());
 
         return createdUser;
     }
@@ -39,7 +39,11 @@ export class UsersService {
     }
 
     async findByLogin(login: string): Promise<User | undefined> {
-        return this.userModel.findOne({ login }).exec();
+        const userLogin = await this.userModel.findOne({ login }).exec();
+        if (!userLogin) {
+            throw new NotFoundException('User not found');
+        }
+        return userLogin;
     }
 
     async updateUser(id: string, updateUserDto: UpdateUserDto): Promise<User> {
