@@ -3,7 +3,7 @@ import { IsNotEmpty, IsNumber, IsString } from "class-validator";
 export class UpdateMovieDto {
     @IsString()
     @IsNotEmpty()
-    name?: string;
+    title?: string;
 
     @IsString()
     @IsNotEmpty()

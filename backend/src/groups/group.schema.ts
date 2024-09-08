@@ -7,10 +7,10 @@ export class Group extends Document {
     name: string;
 
     @Prop({ type: [{ type: Types.ObjectId, ref: 'User' }] })
-    users: Types.ObjectId[];
+    members: Types.ObjectId[];
 
-    @Prop({ type: [{ type: Types.ObjectId, ref: 'Movie' }] })
-    movies: Types.ObjectId[];
+    @Prop({ type: [{ movieId: { type: Types.ObjectId, ref: 'Movie' }, recommendedBy: { type: Types.ObjectId, ref: 'Users' } }] })
+    sharedWatchList: { movieId: Types.ObjectId; recommendedBy: Types.ObjectId }[];
 }
 
 export const GroupSchema = SchemaFactory.createForClass(Group);

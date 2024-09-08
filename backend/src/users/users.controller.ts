@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from "@nestjs/common";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UsersService } from "./users.service";
 import { User } from "./user.schema";
@@ -31,5 +31,17 @@ export class UsersController {
     @Delete(':id')
     async delete(@Param('id') id: string) {
         return this.userService.delete(id);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('watchlist/:movieId')
+    async addTowatchlist(@Param('movieId') movieId: string, @Req() req) {
+        return this.userService.addToWatchlist(req.user.userId, movieId)
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('watched/:movieId')
+    async markAsWatched(@Param('movieId') movieId: string, @Body('rating') rating: number, @Req() req) {
+        return this.userService.markAsWatched(req.user.userId, movieId, rating);
     }
 } 

@@ -4,7 +4,7 @@ import { Types, Document } from "mongoose";
 @Schema()
 export class Movie extends Document {
     @Prop({ required: true })
-    name: string;
+    title: string;
 
     @Prop({ required: true })
     genre: string;
@@ -21,11 +21,8 @@ export class Movie extends Document {
     @Prop({ type: [{ type: Types.ObjectId, ref: 'User' }] })
     addedBy: Types.ObjectId[];
 
-    @Prop({ type: [{ type: Types.ObjectId, ref: 'Group' }] })
-    group: Types.ObjectId[];
-
-    @Prop()
-    stars: number;
+    @Prop({ type: [{ user: { type: Types.ObjectId, ref: 'User' }, rating: Number }] })
+    ratings: { user: Types.ObjectId; ratings: number }[]
 }
 
 export const MovieSchema = SchemaFactory.createForClass(Movie);

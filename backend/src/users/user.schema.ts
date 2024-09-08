@@ -15,17 +15,14 @@ export class User extends Document {
     @Prop({ required: true })
     passwordHint: string;
 
+    @Prop({ type: [{ type: Types.ObjectId, ref: 'Movie' }] })
+    watchList: Types.ObjectId[];
+
+    @Prop({ type: [{ movieId: { type: Types.ObjectId, ref: 'Movie' }, rating: Number }] })
+    watched: { movieId: Types.ObjectId; rating: number }[];
+
     @Prop({ type: [{ type: Types.ObjectId, ref: 'Group' }] })
     groups: Types.ObjectId[];
-
-    @Prop({ type: [{ type: Types.ObjectId, ref: 'Movie' }] })
-    watchedMovies: Types.ObjectId[];
-
-    @Prop({ default: 0 })
-    moviesWatched: number;
-
-    @Prop({ default: 0 })
-    moviesAdded: number;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

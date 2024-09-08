@@ -34,7 +34,7 @@ export class GroupController {
 
     @Post(':id/users/:userId')
     addUserToGroup(@Param('id') id: string, @Param('userId') userId: string) {
-        return this.groupService.AddUserToGroup(id, userId);
+        return this.groupService.addUserToGroup(id, userId);
     }
 
     @Post(':id/movies/:movieId')

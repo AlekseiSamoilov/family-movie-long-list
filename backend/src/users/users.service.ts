@@ -16,14 +16,15 @@ export class UsersService {
 
     async create(createUserDto: CreateUserDto): Promise<User> {
         const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
-        const createdUser = await this.userModel.create({
+        const createdUser = new this.userModel({
             ...createUserDto,
             password: hashedPassword,
+            watchList: [],
+            watched: [],
+            groups: [],
         });
 
-        await this.groupService.addUserToGroup(`${createUserDto.name} first group`, createdUser._id.toString());
-
-        return createdUser;
+        return createdUser.save();
     }
 
     async findAll(): Promise<User[]> {
@@ -62,30 +63,22 @@ export class UsersService {
         return deletedUser;
     }
 
-    async addMovieToWatched(userId: string, movieId: string): Promise<User> {
-        const user = await this.userModel.findByIdAndUpdate(
+    async addToWatchlist(userId: string, movieId: string): Promise<User> {
+        return this.userModel.findByIdAndUpdate(
+            userId,
+            { $addToSet: { watchList: movieId } },
+            { new: true }
+        ).exec();
+    }
+
+    async markAsWatched(userId: string, movieId: string, rating: number): Promise<User> {
+        return this.userModel.findByIdAndUpdate(
             userId,
             {
-                $addToSet: { watchedMovies: movieId },
-                $inc: { moviesWatched: 1 }
+                $pull: { watchList: movieId },
+                $push: { watched: { movieId, rating } }
             },
             { new: true }
         ).exec();
-        if (!user) {
-            throw new NotFoundException(`User with ID: ${userId} not found`);
-        }
-        return user;
-    }
-
-    async getMoviesForUserInGroup(userId: string, groupId: string): Promise<any> {
-        const user = await this.userModel.findById(userId).exec();
-        if (!user) {
-            throw new NotFoundException(`User with ID: ${userId} not found`);
-        }
-        const group = await this.groupService.findOne(groupId);
-        if (!group) {
-            throw new NotFoundException(`Group with ID: ${groupId} not found`);
-        }
-        return group.movies;
     }
 }
